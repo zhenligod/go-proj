@@ -3,6 +3,11 @@
     基于golang gin框架和grpc框架封装而成。
     涉及到的包：gin,grpc,protobuf,redigo,daheige/thinkgo
 
+# go version选择
+
+    推荐使用go v1.14.1+版本
+    如果是用的go v1.14以下版本，请使用 go-proj/v1分支
+
 # 目录结构
 
     .
@@ -66,7 +71,7 @@
     
 # 关于gin validate参数校验
 
-    gin1.5.0+ 基于gopkg.in/go-playground/validator.v9封装之后
+    gin1.6.2+ 基于gopkg.in/go-playground/validator.v10封装之后
     将validator库的validate tag改成了binding方便gin使用
     
     参考手册：
@@ -81,39 +86,77 @@
     
 # go-grpc 和 php grpc 工具安装
 
-    参考https://github.com/daheige/hg-grpc
+    ubuntu系统
+        参考 https://github.com/daheige/hg-grpc
+    centos系统
+        参考 docs/centos7-protoc-install.md
+        
+# golang 环境安装
 
-# 设置 golang 环境变量和 go mod 代理
+    golang下载地址:
+       https://golang.google.cn/dl/
 
-    vim ~/.bashrc
-    export GOROOT=/usr/local/go
-    export GOOS=linux
-    export GOPATH=/mygo
-    export GOSRC=$GOPATH/src
-    export GOBIN=$GOPATH/bin
-    export GOPKG=$GOPATH/pkg
+    以go最新版本go1.14版本为例
+    https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+    1、linux环境，下载
+        cd /usr/local/
+        sudo wget https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+        sudo tar zxvf go1.14.1.linux-amd64.tar.gz
+        创建golang需要的目录
+        sudo mkdir /mygo
+        sudo mkdir /mygo/bin
+        sudo mkdir /mygo/src
+        sudo mkdir /mygo/pkg
 
-    #开启go mod机制
-    export GO111MODULE=auto
+    2、设置环境变量vim ~/.bashrc 或者sudo vim /etc/profile
+        export GOROOT=/usr/local/go
+        export GOOS=linux
+        export GOPATH=/mygo
+        export GOSRC=$GOPATH/src
+        export GOBIN=$GOPATH/bin
+        export GOPKG=$GOPATH/pkg
+        #开启go mod机制
+        export GO111MODULE=on
 
-    #禁用cgo模块
-    export CGO_ENABLED=0
+        #禁用cgo模块
+        export CGO_ENABLED=0
 
-    # 阿里云代理
-    export GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
+        export PATH=$GOROOT/bin:$GOBIN:$PATH
 
-    # 也可以使用下面这个代理
-    #export GOPROXY=https://goproxy.cn,direct
+    3、source ~/.bashrc 生效配置
 
-    #下面一行请根据实际情况修改
-    export PATH=$GOROOT/bin:$GOBIN:$PATH
+# 设置 goproxy 代理
 
-    保存退出:wq 使配置文件生效 source ~/.bashrc
+    go version >= 1.13
+    设置goproxy代理
+    vim ~/.bashrc添加如下内容:
+    export GOPROXY=https://goproxy.io,direct
+    或者
+    export GOPROXY=https://goproxy.cn,direct
+    或者
+    export GOPROXY=https://goproxy.cn,https://mirrors.aliyun.com/goproxy/,direct
+
+    让bashrc生效
+    source ~/.bashrc
+
+    go version < 1.13
+    vim ~/.bashrc添加如下内容：
+    export GOPROXY=https://goproxy.io
+    或者使用 export GOPROXY=https://athens.azurefd.net
+    或者使用 export GOPROXY=https://mirrors.aliyun.com/goproxy/
+    让bashrc生效
+    source ~/.bashrc
+
+# php grpc工具和拓展安装
+
+    参考 docs/centos7-protoc-install.md
 
 # grpc 运行
 
-    1、生成pb代码
-        sh bin/pb-generate.sh
+    1、生成pb代码 （生成代码之前，请先安装好go-grpc 和 php grpc 工具）
+        sh bin/go-generate.sh
+        sh bin/php-generate.sh
+
     2、启动服务端
     $ cp app.exam.yaml app.yaml
     $ sh bin/app-start.sh rpc
@@ -287,7 +330,7 @@
              $ docker run -it --name=go-proj-rpc -v /data/logs:/data/logs -v /data/www/go-proj:/data/conf -p 50051:50051 -p 51051:51051 go-proj-rpc:v1
 
     如果要在后台运行，docker run 加一个 -d参数
-
+    
     采用脚步构建镜像 sh bin/docker-build.sh web
 
 # 版权
